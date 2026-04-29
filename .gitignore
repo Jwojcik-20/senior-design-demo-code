@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+.venv*/
+venv/
+
+# Local logs and dumps
+*.log
+*.txt
+
+# Generated media and alerts
+alert_clips/
+
+# Local datasets / personal training images
+dataset/
+
+# Generated model artifacts and caches
+models/go2_ssh_cache/
+models/go2_webrtc_bridge/
+models/go2_camera_probe_status.json
+models/go2_navigation_target.json
+models/go2_waypoints.json
+models/labels.json
+models/lbph_face.yml
+models/opencv_face_embeddings.npz
+models/opencv_face_labels.json
+
+# OS / editor noise
+.DS_Store
+Thumbs.db

@@ -1,0 +1,49 @@
+{
+  "rt/utlidar/lidar_state": {
+    "stamp": 1777398000.0,
+    "firmware_version": "1.2.3",
+    "software_version": "1.0.0.39",
+    "sdk_version": "1.0.9",
+    "sys_rotation_speed": 10818.608398,
+    "com_rotation_speed": 663.203247,
+    "error_state": 0,
+    "dirty_percentage": 8,
+    "cloud_frequency": 14.479822,
+    "cloud_packet_loss_rate": 2.209945,
+    "cloud_size": 18679,
+    "cloud_scan_num": 180,
+    "imu_frequency": 249.054932,
+    "imu_packet_loss_rate": 0,
+    "imu_rpy": [
+      -169.848022,
+      -6.715251,
+      -56.566452
+    ],
+    "serial_recv_stamp": 1777398000.0,
+    "serial_buffer_size": 0,
+    "serial_buffer_read": 131
+  },
+  "rt/utlidar/voxel_map_compressed": {
+    "stamp": 1777398000.0,
+    "frame_id": "odom",
+    "resolution": 0.05,
+    "src_size": 77824,
+    "origin": [
+      -0.575,
+      -3.975,
+      -0.575
+    ],
+    "width": [
+      128,
+      128,
+      38
+    ],
+    "data": {
+      "point_count": 49959,
+      "face_count": 67331,
+      "positions": "ndarray",
+      "uvs": "ndarray",
+      "indices": "ndarray"
+    }
+  }
+}
