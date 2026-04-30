@@ -62,6 +62,16 @@ class ProtocolUI:
         self.refresh_roster()
         self._poll_log_queue()
 
+    def _bind_mousewheel(self, canvas: tk.Canvas):
+        canvas.bind_all("<MouseWheel>", self._on_mousewheel)
+
+    def _unbind_mousewheel(self):
+        self.root.unbind_all("<MouseWheel>")
+
+    def _on_mousewheel(self, event):
+        if hasattr(self, "scroll_canvas") and self.scroll_canvas.winfo_exists():
+            self.scroll_canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+
     def _configure_style(self):
         style = ttk.Style()
         try:
@@ -124,12 +134,45 @@ class ProtocolUI:
 
     def _build(self):
         self.root.columnconfigure(0, weight=1)
-        self.root.rowconfigure(1, weight=1)
+        self.root.rowconfigure(0, weight=1)
+
+        shell = ttk.Frame(self.root, style="App.TFrame")
+        shell.grid(row=0, column=0, sticky="nsew")
+        shell.columnconfigure(0, weight=1)
+        shell.rowconfigure(0, weight=1)
+
+        self.scroll_canvas = tk.Canvas(
+            shell,
+            bg=BG,
+            highlightthickness=0,
+            bd=0,
+            relief="flat",
+        )
+        scrollbar = ttk.Scrollbar(shell, orient="vertical", command=self.scroll_canvas.yview)
+        self.scroll_canvas.configure(yscrollcommand=scrollbar.set)
+        self.scroll_canvas.grid(row=0, column=0, sticky="nsew")
+        scrollbar.grid(row=0, column=1, sticky="ns")
+
+        content = ttk.Frame(self.scroll_canvas, style="App.TFrame")
+        content.columnconfigure(0, weight=1)
+        content.rowconfigure(1, weight=1)
+        content_window = self.scroll_canvas.create_window((0, 0), window=content, anchor="nw")
+
+        def _sync_scrollregion(_event=None):
+            self.scroll_canvas.configure(scrollregion=self.scroll_canvas.bbox("all"))
+
+        def _sync_width(_event=None):
+            self.scroll_canvas.itemconfigure(content_window, width=self.scroll_canvas.winfo_width())
+
+        content.bind("<Configure>", _sync_scrollregion)
+        self.scroll_canvas.bind("<Configure>", _sync_width)
+        self.scroll_canvas.bind("<Enter>", lambda _event: self._bind_mousewheel(self.scroll_canvas))
+        self.scroll_canvas.bind("<Leave>", lambda _event: self._unbind_mousewheel())
 
         header_pad = (14, 10, 14, 6) if self.embedded else (20, 14, 20, 6)
         body_pad = (14, 6, 14, 14) if self.embedded else (20, 8, 20, 20)
         info_wrap = 220 if self.embedded else 250
-        header = ttk.Frame(self.root, style="App.TFrame", padding=header_pad)
+        header = ttk.Frame(content, style="App.TFrame", padding=header_pad)
         header.grid(row=0, column=0, sticky="ew")
         header.columnconfigure(0, weight=1)
         header.columnconfigure(1, weight=0)
@@ -153,7 +196,7 @@ class ProtocolUI:
         )
         status_chip.grid(row=0, column=1, rowspan=2, sticky="e")
 
-        body = ttk.Frame(self.root, style="App.TFrame", padding=body_pad)
+        body = ttk.Frame(content, style="App.TFrame", padding=body_pad)
         body.grid(row=1, column=0, sticky="nsew")
         body.columnconfigure(0, weight=2)
         body.columnconfigure(1, weight=3)
