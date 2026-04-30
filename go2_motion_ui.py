@@ -100,10 +100,10 @@ class MotionUI:
         expanded = self.connection_expanded.get()
         if expanded:
             self.connection_fields.grid()
-            self.connection_toggle.configure(text="Connection Settings ▲")
+            self.connection_toggle.configure(text="Connection Settings [-]")
         else:
             self.connection_fields.grid_remove()
-            self.connection_toggle.configure(text="Connection Settings ▼")
+            self.connection_toggle.configure(text="Connection Settings [+]")
 
     def _configure_style(self):
         style = ttk.Style()
@@ -188,39 +188,12 @@ class MotionUI:
         shell = ttk.Frame(self.root, style="App.TFrame")
         shell.grid(row=0, column=0, sticky="nsew")
         shell.columnconfigure(0, weight=1)
-        shell.rowconfigure(0, weight=1)
-
-        self.scroll_canvas = tk.Canvas(
-            shell,
-            bg=BG,
-            highlightthickness=0,
-            bd=0,
-            relief="flat",
-        )
-        scrollbar = ttk.Scrollbar(shell, orient="vertical", command=self.scroll_canvas.yview)
-        self.scroll_canvas.configure(yscrollcommand=scrollbar.set)
-        self.scroll_canvas.grid(row=0, column=0, sticky="nsew")
-        scrollbar.grid(row=0, column=1, sticky="ns")
-
-        content = ttk.Frame(self.scroll_canvas, style="App.TFrame")
-        content.columnconfigure(0, weight=1)
-        content.rowconfigure(1, weight=1)
-        content_window = self.scroll_canvas.create_window((0, 0), window=content, anchor="nw")
-
-        def _sync_scrollregion(_event=None):
-            self.scroll_canvas.configure(scrollregion=self.scroll_canvas.bbox("all"))
-
-        def _sync_width(_event=None):
-            self.scroll_canvas.itemconfigure(content_window, width=self.scroll_canvas.winfo_width())
-
-        content.bind("<Configure>", _sync_scrollregion)
-        self.scroll_canvas.bind("<Configure>", _sync_width)
-        self.scroll_canvas.bind("<Enter>", lambda _event: self._bind_mousewheel(self.scroll_canvas))
-        self.scroll_canvas.bind("<Leave>", lambda _event: self._unbind_mousewheel())
+        shell.rowconfigure(0, weight=0)
+        shell.rowconfigure(1, weight=1)
 
         header_pad = (14, 10, 14, 6) if self.embedded else (24, 18, 24, 8)
         body_pad = (14, 6, 14, 14) if self.embedded else (24, 10, 24, 24)
-        header = ttk.Frame(content, style="App.TFrame", padding=header_pad)
+        header = ttk.Frame(shell, style="App.TFrame", padding=header_pad)
         header.grid(row=0, column=0, sticky="ew")
         header.columnconfigure(0, weight=1)
         header.columnconfigure(1, weight=0)
@@ -257,8 +230,36 @@ class MotionUI:
             command=self.stop_active_process,
         ).grid(row=0, column=2, sticky="ew", padx=(8, 0))
 
+        self.scroll_canvas = tk.Canvas(
+            shell,
+            bg=BG,
+            highlightthickness=0,
+            bd=0,
+            relief="flat",
+        )
+        scrollbar = ttk.Scrollbar(shell, orient="vertical", command=self.scroll_canvas.yview)
+        self.scroll_canvas.configure(yscrollcommand=scrollbar.set)
+        self.scroll_canvas.grid(row=1, column=0, sticky="nsew")
+        scrollbar.grid(row=1, column=1, sticky="ns")
+
+        content = ttk.Frame(self.scroll_canvas, style="App.TFrame")
+        content.columnconfigure(0, weight=1)
+        content.rowconfigure(0, weight=1)
+        content_window = self.scroll_canvas.create_window((0, 0), window=content, anchor="nw")
+
+        def _sync_scrollregion(_event=None):
+            self.scroll_canvas.configure(scrollregion=self.scroll_canvas.bbox("all"))
+
+        def _sync_width(_event=None):
+            self.scroll_canvas.itemconfigure(content_window, width=self.scroll_canvas.winfo_width())
+
+        content.bind("<Configure>", _sync_scrollregion)
+        self.scroll_canvas.bind("<Configure>", _sync_width)
+        self.scroll_canvas.bind("<Enter>", lambda _event: self._bind_mousewheel(self.scroll_canvas))
+        self.scroll_canvas.bind("<Leave>", lambda _event: self._unbind_mousewheel())
+
         body = ttk.Frame(content, style="App.TFrame", padding=body_pad)
-        body.grid(row=1, column=0, sticky="nsew")
+        body.grid(row=0, column=0, sticky="nsew")
         body.columnconfigure(0, weight=1)
         body.columnconfigure(1, weight=1)
         body.rowconfigure(0, weight=1)
@@ -279,7 +280,7 @@ class MotionUI:
         connection.columnconfigure(0, weight=1)
         self.connection_toggle = ttk.Checkbutton(
             connection,
-            text="Connection Settings ▲" if self.connection_expanded.get() else "Connection Settings ▼",
+            text="Connection Settings [-]" if self.connection_expanded.get() else "Connection Settings [+]",
             variable=self.connection_expanded,
             command=self._toggle_connection_panel,
             style="Action.TButton",
