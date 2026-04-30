@@ -29,6 +29,16 @@ logging.basicConfig(level=logging.FATAL)
 patch_unitree_local_signaling()
 
 BASE_DIR = Path(__file__).resolve().parent
+
+
+def resolve_asset_path(filename: str) -> Path:
+    for folder in ("IMAGES", "images"):
+        candidate = BASE_DIR / folder / filename
+        if candidate.exists():
+            return candidate
+    return BASE_DIR / "IMAGES" / filename
+
+
 FACE_BACKEND = os.getenv("FACE_BACKEND", "embedding").strip().lower()
 MODEL_PATH = os.getenv("FACE_MODEL_PATH", str(BASE_DIR / "models" / "lbph_face.yml"))
 LABELS_PATH = os.getenv("FACE_LABELS_PATH", str(BASE_DIR / "models" / "labels.json"))
@@ -48,8 +58,8 @@ EVENT_LOG = []
 LOGGED_IDENTITIES = set()
 LOGIN_USER = os.getenv("LIVEINTERFACE_USER", "demo")
 LOGIN_PASS = os.getenv("LIVEINTERFACE_PASS", "demo")
-LOGO_PATH = BASE_DIR / "images" / "Logo.png"
-SMALL_LOGO_PATH = BASE_DIR / "images" / "logononame.png"
+LOGO_PATH = resolve_asset_path("Logo.png")
+SMALL_LOGO_PATH = resolve_asset_path("logononame.png")
 VALID_ROLES = {"student", "staff", "visitor", "faculty", "guest"}
 GO2_AUDIO_ENABLED = os.getenv("GO2_AUDIO_ENABLED", "1").lower() in {"1", "true", "yes"}
 GO2_AUDIO_SAMPLERATE = int(os.getenv("GO2_AUDIO_SAMPLERATE", "48000"))
