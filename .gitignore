@@ -9,6 +9,7 @@ venv/
 # Local logs and dumps
 *.log
 *.txt
+!requirements.txt
 
 # Generated media and alerts
 alert_clips/

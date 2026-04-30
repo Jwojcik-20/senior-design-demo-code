@@ -1,0 +1,7 @@
+aiortc
+numpy
+opencv-python
+paramiko
+PyAudio
+requests
+unitree-webrtc-connect
