@@ -76,6 +76,7 @@ class MotionUI:
         self.command_var = tk.StringVar(value="No motion sent yet.")
         self.health_var = tk.StringVar(value="Link: checking...")
         self.motion_picker_var = tk.StringVar(value="StandUp")
+        self.connection_expanded = tk.BooleanVar(value=False if self.embedded else True)
         self._health_job = None
         self._held_motion: str | None = None
         self._hold_active = False
@@ -84,6 +85,25 @@ class MotionUI:
         self._build()
         self._poll_log_queue()
         self._schedule_health_check(initial=True)
+
+    def _bind_mousewheel(self, canvas: tk.Canvas):
+        canvas.bind_all("<MouseWheel>", self._on_mousewheel)
+
+    def _unbind_mousewheel(self):
+        self.root.unbind_all("<MouseWheel>")
+
+    def _on_mousewheel(self, event):
+        if hasattr(self, "scroll_canvas") and self.scroll_canvas.winfo_exists():
+            self.scroll_canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
+
+    def _toggle_connection_panel(self):
+        expanded = self.connection_expanded.get()
+        if expanded:
+            self.connection_fields.grid()
+            self.connection_toggle.configure(text="Connection Settings ▲")
+        else:
+            self.connection_fields.grid_remove()
+            self.connection_toggle.configure(text="Connection Settings ▼")
 
     def _configure_style(self):
         style = ttk.Style()
@@ -163,11 +183,44 @@ class MotionUI:
 
     def _build(self):
         self.root.columnconfigure(0, weight=1)
-        self.root.rowconfigure(1, weight=1)
+        self.root.rowconfigure(0, weight=1)
+
+        shell = ttk.Frame(self.root, style="App.TFrame")
+        shell.grid(row=0, column=0, sticky="nsew")
+        shell.columnconfigure(0, weight=1)
+        shell.rowconfigure(0, weight=1)
+
+        self.scroll_canvas = tk.Canvas(
+            shell,
+            bg=BG,
+            highlightthickness=0,
+            bd=0,
+            relief="flat",
+        )
+        scrollbar = ttk.Scrollbar(shell, orient="vertical", command=self.scroll_canvas.yview)
+        self.scroll_canvas.configure(yscrollcommand=scrollbar.set)
+        self.scroll_canvas.grid(row=0, column=0, sticky="nsew")
+        scrollbar.grid(row=0, column=1, sticky="ns")
+
+        content = ttk.Frame(self.scroll_canvas, style="App.TFrame")
+        content.columnconfigure(0, weight=1)
+        content.rowconfigure(1, weight=1)
+        content_window = self.scroll_canvas.create_window((0, 0), window=content, anchor="nw")
+
+        def _sync_scrollregion(_event=None):
+            self.scroll_canvas.configure(scrollregion=self.scroll_canvas.bbox("all"))
+
+        def _sync_width(_event=None):
+            self.scroll_canvas.itemconfigure(content_window, width=self.scroll_canvas.winfo_width())
+
+        content.bind("<Configure>", _sync_scrollregion)
+        self.scroll_canvas.bind("<Configure>", _sync_width)
+        self.scroll_canvas.bind("<Enter>", lambda _event: self._bind_mousewheel(self.scroll_canvas))
+        self.scroll_canvas.bind("<Leave>", lambda _event: self._unbind_mousewheel())
 
         header_pad = (14, 10, 14, 6) if self.embedded else (24, 18, 24, 8)
         body_pad = (14, 6, 14, 14) if self.embedded else (24, 10, 24, 24)
-        header = ttk.Frame(self.root, style="App.TFrame", padding=header_pad)
+        header = ttk.Frame(content, style="App.TFrame", padding=header_pad)
         header.grid(row=0, column=0, sticky="ew")
         header.columnconfigure(0, weight=1)
         header.columnconfigure(1, weight=0)
@@ -204,24 +257,36 @@ class MotionUI:
             command=self.stop_active_process,
         ).grid(row=0, column=2, sticky="ew", padx=(8, 0))
 
-        body = ttk.Frame(self.root, style="App.TFrame", padding=body_pad)
+        body = ttk.Frame(content, style="App.TFrame", padding=body_pad)
         body.grid(row=1, column=0, sticky="nsew")
         body.columnconfigure(0, weight=1)
         body.columnconfigure(1, weight=1)
-        body.rowconfigure(0, weight=1)
-        body.rowconfigure(1, weight=1)
+        body.rowconfigure(0, weight=0)
+        body.rowconfigure(1, weight=0)
 
         connection = ttk.LabelFrame(body, text="Connection", style="Section.TLabelframe", padding=16)
         connection.grid(row=0, column=0, sticky="nsew", padx=(0, 16))
         connection.columnconfigure(0, weight=1)
-        connection.columnconfigure(1, weight=1)
-
-        ttk.Label(connection, text="Go2 IP", style="Field.TLabel").grid(row=0, column=0, columnspan=2, sticky="w")
-        ttk.Entry(connection, textvariable=self.go2_ip_var, width=24, style="Input.TEntry").grid(row=1, column=0, columnspan=2, sticky="ew", pady=(5, 12))
-
-        ttk.Label(connection, text="Hold Seconds", style="Field.TLabel").grid(row=2, column=0, sticky="w")
-        ttk.Combobox(
+        self.connection_toggle = ttk.Checkbutton(
             connection,
+            text="Connection Settings ▲" if self.connection_expanded.get() else "Connection Settings ▼",
+            variable=self.connection_expanded,
+            command=self._toggle_connection_panel,
+            style="Action.TButton",
+        )
+        self.connection_toggle.grid(row=0, column=0, sticky="ew", pady=(0, 10))
+
+        self.connection_fields = ttk.Frame(connection, style="Panel.TFrame")
+        self.connection_fields.grid(row=1, column=0, sticky="ew")
+        self.connection_fields.columnconfigure(0, weight=1)
+        self.connection_fields.columnconfigure(1, weight=1)
+
+        ttk.Label(self.connection_fields, text="Go2 IP", style="Field.TLabel").grid(row=0, column=0, columnspan=2, sticky="w")
+        ttk.Entry(self.connection_fields, textvariable=self.go2_ip_var, width=24, style="Input.TEntry").grid(row=1, column=0, columnspan=2, sticky="ew", pady=(5, 12))
+
+        ttk.Label(self.connection_fields, text="Hold Seconds", style="Field.TLabel").grid(row=2, column=0, sticky="w")
+        ttk.Combobox(
+            self.connection_fields,
             textvariable=self.hold_seconds_var,
             values=("0.5", "1.0", "1.5", "2.0", "3.0"),
             state="readonly",
@@ -229,9 +294,9 @@ class MotionUI:
             width=10,
         ).grid(row=3, column=0, sticky="ew", pady=(5, 12), padx=(0, 6))
 
-        ttk.Label(connection, text="Connect Timeout", style="Field.TLabel").grid(row=2, column=1, sticky="w")
+        ttk.Label(self.connection_fields, text="Connect Timeout", style="Field.TLabel").grid(row=2, column=1, sticky="w")
         ttk.Combobox(
-            connection,
+            self.connection_fields,
             textvariable=self.connect_timeout_var,
             values=("10", "12", "15", "20", "25", "30"),
             state="readonly",
@@ -239,9 +304,9 @@ class MotionUI:
             width=10,
         ).grid(row=3, column=1, sticky="ew", pady=(5, 12), padx=(6, 0))
 
-        ttk.Label(connection, text="Datachannel Timeout", style="Field.TLabel").grid(row=4, column=0, sticky="w")
+        ttk.Label(self.connection_fields, text="Datachannel Timeout", style="Field.TLabel").grid(row=4, column=0, sticky="w")
         ttk.Combobox(
-            connection,
+            self.connection_fields,
             textvariable=self.datachannel_timeout_var,
             values=("10", "12", "15", "20", "25", "30"),
             state="readonly",
@@ -249,9 +314,9 @@ class MotionUI:
             width=10,
         ).grid(row=5, column=0, sticky="ew", pady=(5, 12), padx=(0, 6))
 
-        ttk.Label(connection, text="Connect Retries", style="Field.TLabel").grid(row=4, column=1, sticky="w")
+        ttk.Label(self.connection_fields, text="Connect Retries", style="Field.TLabel").grid(row=4, column=1, sticky="w")
         ttk.Combobox(
-            connection,
+            self.connection_fields,
             textvariable=self.connect_retries_var,
             values=("1", "2", "3", "4", "5"),
             state="readonly",
@@ -259,9 +324,9 @@ class MotionUI:
             width=10,
         ).grid(row=5, column=1, sticky="ew", pady=(5, 12), padx=(6, 0))
 
-        ttk.Label(connection, text="Linear Speed", style="Field.TLabel").grid(row=6, column=0, sticky="w")
+        ttk.Label(self.connection_fields, text="Linear Speed", style="Field.TLabel").grid(row=6, column=0, sticky="w")
         ttk.Combobox(
-            connection,
+            self.connection_fields,
             textvariable=self.linear_speed_var,
             values=("0.40", "0.60", "0.80", "1.00", "1.20"),
             state="readonly",
@@ -269,9 +334,9 @@ class MotionUI:
             width=10,
         ).grid(row=7, column=0, sticky="ew", pady=(5, 12), padx=(0, 6))
 
-        ttk.Label(connection, text="Yaw Speed", style="Field.TLabel").grid(row=6, column=1, sticky="w")
+        ttk.Label(self.connection_fields, text="Yaw Speed", style="Field.TLabel").grid(row=6, column=1, sticky="w")
         ttk.Combobox(
-            connection,
+            self.connection_fields,
             textvariable=self.yaw_speed_var,
             values=("0.80", "1.20", "1.50", "1.80", "2.00"),
             state="readonly",
@@ -279,9 +344,9 @@ class MotionUI:
             width=10,
         ).grid(row=7, column=1, sticky="ew", pady=(5, 12), padx=(6, 0))
 
-        ttk.Label(connection, text="Lateral Speed", style="Field.TLabel").grid(row=8, column=0, sticky="w")
+        ttk.Label(self.connection_fields, text="Lateral Speed", style="Field.TLabel").grid(row=8, column=0, sticky="w")
         ttk.Combobox(
-            connection,
+            self.connection_fields,
             textvariable=self.lateral_speed_var,
             values=("0.30", "0.45", "0.60", "0.72", "0.90"),
             state="readonly",
@@ -290,7 +355,7 @@ class MotionUI:
         ).grid(row=9, column=0, sticky="ew", pady=(5, 12), padx=(0, 6))
 
         status = tk.Label(
-            connection,
+            self.connection_fields,
             textvariable=self.status_var,
             bg="#fff5f5",
             fg=ACCENT,
@@ -300,6 +365,7 @@ class MotionUI:
             relief="flat",
         )
         status.grid(row=10, column=0, columnspan=2, sticky="ew", pady=(2, 0))
+        self._toggle_connection_panel()
 
         drive = ttk.LabelFrame(body, text="Directional Pad", style="Section.TLabelframe", padding=16)
         drive.grid(row=1, column=0, sticky="nsew", padx=(0, 16), pady=(16, 0))
