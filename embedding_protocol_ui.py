@@ -203,105 +203,37 @@ class ProtocolUI:
         ttk.Entry(fields, textvariable=self.unitree_email_var, width=16).grid(row=9, column=0, sticky="ew", pady=(4, 10))
         ttk.Entry(fields, textvariable=self.unitree_pass_var, width=16, show="*").grid(row=9, column=1, sticky="ew", pady=(4, 10), padx=(8, 0))
 
-        steps_wrap = ttk.Frame(controls, style="Panel.TFrame")
-        steps_wrap.grid(row=2, column=0, sticky="nsew")
-        controls.rowconfigure(2, weight=1)
-        steps_wrap.columnconfigure(0, weight=1)
-        steps_wrap.rowconfigure(0, weight=1)
+        actions = ttk.Frame(controls, style="Panel.TFrame")
+        actions.grid(row=2, column=0, sticky="ew", pady=(10, 0))
+        actions.columnconfigure(0, weight=1)
+        actions.columnconfigure(1, weight=1)
 
-        steps_canvas = tk.Canvas(
-            steps_wrap,
-            bg=PANEL,
-            highlightthickness=0,
-            bd=0,
-            relief="flat",
-        )
-        steps_scroll = ttk.Scrollbar(steps_wrap, orient="vertical", command=steps_canvas.yview)
-        steps_canvas.configure(yscrollcommand=steps_scroll.set)
-        steps_canvas.grid(row=0, column=0, sticky="nsew")
-        steps_scroll.grid(row=0, column=1, sticky="ns")
+        ttk.Label(actions, text="Workflow Actions", style="Field.TLabel").grid(row=0, column=0, columnspan=2, sticky="w", pady=(0, 8))
 
-        steps = ttk.Frame(steps_canvas, style="Panel.TFrame")
-        steps.columnconfigure(0, weight=1)
-        steps_window = steps_canvas.create_window((0, 0), window=steps, anchor="nw")
+        action_specs = [
+            ("1. Download Models", "Accent.TButton", self.download_models),
+            ("2A. Collect Laptop", "Accent.TButton", self.collect_local),
+            ("2B. Collect Go2", "Action.TButton", self.collect_go2),
+            ("3. Train Model", "Accent.TButton", self.train_model),
+            ("4A. Run Laptop", "Action.TButton", self.run_local),
+            ("4B. Run Go2", "Accent.TButton", self.run_go2),
+        ]
 
-        def _sync_steps_width(event=None):
-            steps_canvas.itemconfigure(steps_window, width=steps_canvas.winfo_width())
-
-        def _sync_steps_scroll(event=None):
-            steps_canvas.configure(scrollregion=steps_canvas.bbox("all"))
-
-        steps.bind("<Configure>", _sync_steps_scroll)
-        steps_canvas.bind("<Configure>", _sync_steps_width)
-
-        def _on_steps_mousewheel(event):
-            try:
-                steps_canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
-            except Exception:
-                pass
-
-        steps_canvas.bind_all("<MouseWheel>", _on_steps_mousewheel)
-
-        def add_step(row: int, title: str, desc: str, left_spec: tuple[str, str, object] | None = None, right_spec: tuple[str, str, object] | None = None):
-            card = ttk.Frame(steps, style="PanelAlt.TFrame", padding=12)
-            card.grid(row=row, column=0, sticky="ew", pady=(0, 8))
-            card.columnconfigure(0, weight=1)
-            ttk.Label(card, text=title, style="Field.TLabel").grid(row=0, column=0, sticky="w")
-            ttk.Label(card, text=desc, style="Info.TLabel", wraplength=250, justify="left").grid(row=1, column=0, sticky="w", pady=(3, 8))
-            button_row = ttk.Frame(card, style="PanelAlt.TFrame")
-            button_row.grid(row=2, column=0, sticky="ew")
-            button_row.columnconfigure(0, weight=1)
-            button_row.columnconfigure(1, weight=1)
-            if left_spec is not None:
-                text, style, command = left_spec
-                button = ttk.Button(button_row, text=text, style=style, command=command)
-                button.grid(row=0, column=0, sticky="ew", padx=(0, 6))
-            if right_spec is not None:
-                text, style, command = right_spec
-                button = ttk.Button(button_row, text=text, style=style, command=command)
-                button.grid(row=0, column=1, sticky="ew", padx=(6, 0))
-
-        add_step(
-            0,
-            "Step 1: Download Models",
-            "Download the YuNet and SFace model files first. Do this once before collecting or running recognition.",
-            ("Download Models", "Accent.TButton", self.download_models),
-        )
-
-        add_step(
-            1,
-            "Step 2A: Collect on Laptop",
-            "Use your laptop camera to capture images for the selected person. This is the easiest way to build the first dataset.",
-            ("Collect: Laptop", "Accent.TButton", self.collect_local),
-        )
-
-        add_step(
-            2,
-            "Step 2B: Collect on Go2",
-            "Use the Go2 camera to capture images from the robot itself. Use this after the robot connection fields are set correctly.",
-            ("Collect: Go2", "Action.TButton", self.collect_go2),
-        )
-
-        add_step(
-            3,
-            "Step 3: Train Model",
-            "Build the face database from everyone listed in the roster. Retrain after adding or removing people.",
-            ("Train Model", "Accent.TButton", self.train_model),
-        )
-
-        add_step(
-            4,
-            "Step 4A: Run on Laptop",
-            "Test recognition on the laptop camera first. This confirms the trained model works before using the robot camera.",
-            ("Run: Laptop", "Action.TButton", self.run_local),
-        )
-
-        add_step(
-            5,
-            "Step 4B: Run on Go2",
-            "Run recognition on the Go2 camera after the model is trained. Use hybrid mode if you want WebRTC first with SSH fallback.",
-            ("Run: Go2", "Accent.TButton", self.run_go2),
-        )
+        for index, (label, style_name, command) in enumerate(action_specs):
+            row = 1 + index // 2
+            column = index % 2
+            ttk.Button(
+                actions,
+                text=label,
+                style=style_name,
+                command=command,
+            ).grid(
+                row=row,
+                column=column,
+                sticky="ew",
+                pady=(0, 8),
+                padx=(0, 6) if column == 0 else (6, 0),
+            )
 
         self.workflow_hint = tk.Label(
             controls,
