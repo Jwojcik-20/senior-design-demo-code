@@ -173,38 +173,8 @@ class ProtocolUI:
             justify="left",
         ).grid(row=0, column=0, sticky="w", pady=(0, 10))
 
-        fields = ttk.Frame(controls, style="Panel.TFrame")
-        fields.grid(row=1, column=0, sticky="ew")
-        fields.columnconfigure(0, weight=1)
-        fields.columnconfigure(1, weight=1)
-
-        ttk.Label(fields, text="Role", style="Field.TLabel").grid(row=0, column=0, sticky="w")
-        ttk.Label(fields, text="Person Label", style="Field.TLabel").grid(row=0, column=1, sticky="w", padx=(10, 0))
-        ttk.Combobox(fields, textvariable=self.role_var, values=VALID_ROLES, width=11, state="readonly").grid(row=1, column=0, sticky="ew", pady=(4, 8))
-        ttk.Entry(fields, textvariable=self.label_var, width=16).grid(row=1, column=1, sticky="ew", pady=(4, 8), padx=(8, 0))
-
-        ttk.Label(fields, text="Shots", style="Field.TLabel").grid(row=2, column=0, sticky="w")
-        ttk.Label(fields, text="Camera Index", style="Field.TLabel").grid(row=2, column=1, sticky="w", padx=(10, 0))
-        ttk.Entry(fields, textvariable=self.shots_var, width=11).grid(row=3, column=0, sticky="ew", pady=(4, 8))
-        ttk.Entry(fields, textvariable=self.cam_var, width=11).grid(row=3, column=1, sticky="ew", pady=(4, 8), padx=(8, 0))
-
-        ttk.Label(fields, text="Go2 IP", style="Field.TLabel").grid(row=4, column=0, sticky="w")
-        ttk.Label(fields, text="Go2 Mode", style="Field.TLabel").grid(row=4, column=1, sticky="w", padx=(10, 0))
-        ttk.Entry(fields, textvariable=self.go2_ip_var, width=16).grid(row=5, column=0, sticky="ew", pady=(4, 8))
-        ttk.Combobox(fields, textvariable=self.go2_mode_var, values=CONNECTION_MODES, width=11, state="readonly").grid(row=5, column=1, sticky="ew", pady=(4, 8), padx=(8, 0))
-
-        ttk.Label(fields, text="Go2 Serial", style="Field.TLabel").grid(row=6, column=0, sticky="w")
-        ttk.Label(fields, text="Min Face Size", style="Field.TLabel").grid(row=6, column=1, sticky="w", padx=(10, 0))
-        ttk.Entry(fields, textvariable=self.go2_serial_var, width=16).grid(row=7, column=0, sticky="ew", pady=(4, 8))
-        ttk.Entry(fields, textvariable=self.min_face_size_var, width=11).grid(row=7, column=1, sticky="ew", pady=(4, 8), padx=(8, 0))
-
-        ttk.Label(fields, text="Unitree Email", style="Field.TLabel").grid(row=8, column=0, sticky="w")
-        ttk.Label(fields, text="Unitree Password", style="Field.TLabel").grid(row=8, column=1, sticky="w", padx=(10, 0))
-        ttk.Entry(fields, textvariable=self.unitree_email_var, width=16).grid(row=9, column=0, sticky="ew", pady=(4, 10))
-        ttk.Entry(fields, textvariable=self.unitree_pass_var, width=16, show="*").grid(row=9, column=1, sticky="ew", pady=(4, 10), padx=(8, 0))
-
         actions = ttk.Frame(controls, style="Panel.TFrame")
-        actions.grid(row=2, column=0, sticky="ew", pady=(10, 0))
+        actions.grid(row=1, column=0, sticky="ew", pady=(0, 10))
         actions.columnconfigure(0, weight=1)
         actions.columnconfigure(1, weight=1)
 
@@ -235,6 +205,36 @@ class ProtocolUI:
                 padx=(0, 6) if column == 0 else (6, 0),
             )
 
+        fields = ttk.Frame(controls, style="Panel.TFrame")
+        fields.grid(row=2, column=0, sticky="ew")
+        fields.columnconfigure(0, weight=1)
+        fields.columnconfigure(1, weight=1)
+
+        ttk.Label(fields, text="Role", style="Field.TLabel").grid(row=0, column=0, sticky="w")
+        ttk.Label(fields, text="Person Label", style="Field.TLabel").grid(row=0, column=1, sticky="w", padx=(10, 0))
+        ttk.Combobox(fields, textvariable=self.role_var, values=VALID_ROLES, width=11, state="readonly").grid(row=1, column=0, sticky="ew", pady=(3, 6))
+        ttk.Entry(fields, textvariable=self.label_var, width=16).grid(row=1, column=1, sticky="ew", pady=(3, 6), padx=(8, 0))
+
+        ttk.Label(fields, text="Shots", style="Field.TLabel").grid(row=2, column=0, sticky="w")
+        ttk.Label(fields, text="Camera Index", style="Field.TLabel").grid(row=2, column=1, sticky="w", padx=(10, 0))
+        ttk.Entry(fields, textvariable=self.shots_var, width=11).grid(row=3, column=0, sticky="ew", pady=(3, 6))
+        ttk.Entry(fields, textvariable=self.cam_var, width=11).grid(row=3, column=1, sticky="ew", pady=(3, 6), padx=(8, 0))
+
+        ttk.Label(fields, text="Go2 IP", style="Field.TLabel").grid(row=4, column=0, sticky="w")
+        ttk.Label(fields, text="Go2 Mode", style="Field.TLabel").grid(row=4, column=1, sticky="w", padx=(10, 0))
+        ttk.Entry(fields, textvariable=self.go2_ip_var, width=16).grid(row=5, column=0, sticky="ew", pady=(3, 6))
+        ttk.Combobox(fields, textvariable=self.go2_mode_var, values=CONNECTION_MODES, width=11, state="readonly").grid(row=5, column=1, sticky="ew", pady=(3, 6), padx=(8, 0))
+
+        ttk.Label(fields, text="Go2 Serial", style="Field.TLabel").grid(row=6, column=0, sticky="w")
+        ttk.Label(fields, text="Min Face Size", style="Field.TLabel").grid(row=6, column=1, sticky="w", padx=(10, 0))
+        ttk.Entry(fields, textvariable=self.go2_serial_var, width=16).grid(row=7, column=0, sticky="ew", pady=(3, 6))
+        ttk.Entry(fields, textvariable=self.min_face_size_var, width=11).grid(row=7, column=1, sticky="ew", pady=(3, 6), padx=(8, 0))
+
+        ttk.Label(fields, text="Unitree Email", style="Field.TLabel").grid(row=8, column=0, sticky="w")
+        ttk.Label(fields, text="Unitree Password", style="Field.TLabel").grid(row=8, column=1, sticky="w", padx=(10, 0))
+        ttk.Entry(fields, textvariable=self.unitree_email_var, width=16).grid(row=9, column=0, sticky="ew", pady=(3, 6))
+        ttk.Entry(fields, textvariable=self.unitree_pass_var, width=16, show="*").grid(row=9, column=1, sticky="ew", pady=(3, 6), padx=(8, 0))
+
         self.workflow_hint = tk.Label(
             controls,
             textvariable=self.workflow_hint_var,
@@ -247,7 +247,7 @@ class ProtocolUI:
             font=("Segoe UI", 10, "bold"),
             wraplength=290,
         )
-        self.workflow_hint.grid(row=3, column=0, sticky="ew", pady=(6, 0))
+        self.workflow_hint.grid(row=3, column=0, sticky="ew", pady=(8, 0))
 
         output = ttk.LabelFrame(body, text="Run Log", style="Section.TLabelframe", padding=14)
         output.grid(row=0, column=1, sticky="nsew")
