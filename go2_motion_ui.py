@@ -261,11 +261,21 @@ class MotionUI:
         body.grid(row=1, column=0, sticky="nsew")
         body.columnconfigure(0, weight=1)
         body.columnconfigure(1, weight=1)
-        body.rowconfigure(0, weight=0)
-        body.rowconfigure(1, weight=0)
+        body.rowconfigure(0, weight=1)
 
-        connection = ttk.LabelFrame(body, text="Connection", style="Section.TLabelframe", padding=16)
-        connection.grid(row=0, column=0, sticky="nsew", padx=(0, 16))
+        left_panel = ttk.Frame(body, style="App.TFrame")
+        left_panel.grid(row=0, column=0, sticky="nsew", padx=(0, 16))
+        left_panel.columnconfigure(0, weight=1)
+        left_panel.rowconfigure(1, weight=1)
+
+        right_panel = ttk.Frame(body, style="App.TFrame")
+        right_panel.grid(row=0, column=1, sticky="nsew")
+        right_panel.columnconfigure(0, weight=1)
+        right_panel.rowconfigure(0, weight=1)
+        right_panel.rowconfigure(1, weight=1)
+
+        connection = ttk.LabelFrame(left_panel, text="Connection", style="Section.TLabelframe", padding=16)
+        connection.grid(row=0, column=0, sticky="ew")
         connection.columnconfigure(0, weight=1)
         self.connection_toggle = ttk.Checkbutton(
             connection,
@@ -367,8 +377,8 @@ class MotionUI:
         status.grid(row=10, column=0, columnspan=2, sticky="ew", pady=(2, 0))
         self._toggle_connection_panel()
 
-        drive = ttk.LabelFrame(body, text="Directional Pad", style="Section.TLabelframe", padding=16)
-        drive.grid(row=1, column=0, sticky="nsew", padx=(0, 16), pady=(16, 0))
+        drive = ttk.LabelFrame(left_panel, text="Directional Pad", style="Section.TLabelframe", padding=16)
+        drive.grid(row=1, column=0, sticky="nsew", pady=(16, 0))
         drive.columnconfigure(0, weight=1)
         ttk.Label(drive, text="Press and hold to move. Release to stop.", style="Info.TLabel").grid(row=0, column=0, sticky="w", pady=(0, 8))
         pad = ttk.Frame(drive, style="Panel.TFrame")
@@ -399,8 +409,8 @@ class MotionUI:
                     command=lambda name=motion: self.run_motion(name),
                 ).grid(row=r, column=c, sticky="ew", padx=6, pady=6, ipady=5)
 
-        quick = ttk.LabelFrame(body, text="Quick Motions", style="Section.TLabelframe", padding=16)
-        quick.grid(row=1, column=1, sticky="nsew", pady=(16, 0))
+        quick = ttk.LabelFrame(right_panel, text="Quick Motions", style="Section.TLabelframe", padding=16)
+        quick.grid(row=1, column=0, sticky="nsew", pady=(16, 0))
         quick.columnconfigure(0, weight=1)
         quick.columnconfigure(1, weight=1)
         ttk.Label(quick, text="Quick Motions", style="Info.TLabel").grid(row=0, column=0, columnspan=2, sticky="w", pady=(0, 8))
@@ -431,8 +441,8 @@ class MotionUI:
                 command=lambda name=motion: self.run_motion(name),
             ).grid(row=row, column=col, sticky="ew", pady=(0, 8), padx=(0, 6) if col == 0 else (6, 0))
 
-        output = ttk.LabelFrame(body, text="Run Log", style="Section.TLabelframe", padding=12)
-        output.grid(row=0, column=1, sticky="nsew")
+        output = ttk.LabelFrame(right_panel, text="Run Log", style="Section.TLabelframe", padding=12)
+        output.grid(row=0, column=0, sticky="nsew")
         output.columnconfigure(0, weight=1)
         output.rowconfigure(1, weight=1)
 
