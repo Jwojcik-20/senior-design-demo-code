@@ -3,18 +3,17 @@ import tkinter as tk
 from tkinter import ttk
 
 from embedding_protocol_ui import ProtocolUI
-from go2_live_map_ui import BG as MAP_BG
 from go2_live_map_ui import LiveMapUI
 from go2_motion_ui import MotionUI
 from go2_waypoint_ui import WaypointUI
 
 
-APP_BG = MAP_BG
-PANEL = "#0d1b2e"
-TEXT = "#e7f2ff"
-MUTED = "#8ea7c4"
-ACCENT = "#47d7ff"
-EDGE = "#214666"
+APP_BG = "#ffffff"
+PANEL = "#f7f7f7"
+TEXT = "#111111"
+MUTED = "#4b4b4b"
+ACCENT = "#c1121f"
+EDGE = "#d7d7d7"
 ASSET_DIRS = ("IMAGES", "images")
 
 
@@ -49,8 +48,8 @@ class Go2ControlCenter:
     def __init__(self, root: tk.Tk):
         self.root = root
         self.root.title("Go2 Control Center")
-        self.root.geometry("1440x860")
-        self.root.minsize(1180, 760)
+        self.root.geometry("1600x940")
+        self.root.minsize(1280, 820)
         self.root.configure(bg=APP_BG)
         self.root.columnconfigure(0, weight=1)
         self.root.rowconfigure(1, weight=1)
@@ -89,25 +88,25 @@ class Go2ControlCenter:
             pass
         style.configure(".", background=APP_BG, foreground=TEXT)
         style.configure("App.TFrame", background=APP_BG)
-        style.configure("Title.TLabel", background=APP_BG, foreground=TEXT, font=("Segoe UI Semibold", 22))
-        style.configure("Sub.TLabel", background=APP_BG, foreground=MUTED, font=("Segoe UI", 9))
+        style.configure("Title.TLabel", background=APP_BG, foreground=ACCENT, font=("Segoe UI Semibold", 22))
+        style.configure("Sub.TLabel", background=APP_BG, foreground=TEXT, font=("Segoe UI", 9))
         style.configure("Control.TNotebook", background=APP_BG, borderwidth=0)
         style.configure(
             "Control.TNotebook.Tab",
             background=PANEL,
-            foreground=MUTED,
-            padding=(14, 8),
+            foreground=TEXT,
+            padding=(16, 9),
             font=("Segoe UI Semibold", 10),
             borderwidth=0,
         )
         style.map(
             "Control.TNotebook.Tab",
-            background=[("selected", "#13304c"), ("active", "#17395a")],
+            background=[("selected", "#ffe5e5"), ("active", "#f1f1f1")],
             foreground=[("selected", ACCENT), ("active", TEXT)],
         )
 
     def _build(self):
-        header = ttk.Frame(self.root, style="App.TFrame", padding=(18, 12, 18, 6))
+        header = ttk.Frame(self.root, style="App.TFrame", padding=(18, 14, 18, 8))
         header.grid(row=0, column=0, sticky="ew")
         header.columnconfigure(0, weight=1)
         header.columnconfigure(1, weight=0)
@@ -131,14 +130,14 @@ class Go2ControlCenter:
             tk.Label(
                 brand_card,
                 text="Senior Design Demo",
-                fg=TEXT,
+                fg=ACCENT,
                 bg=PANEL,
                 font=("Segoe UI Semibold", 10),
             ).grid(row=1, column=0, sticky="w", pady=(8, 0))
             tk.Label(
                 brand_card,
                 text="Go2 autonomy, mapping, and face-recognition controls",
-                fg=MUTED,
+                fg=TEXT,
                 bg=PANEL,
                 font=("Segoe UI", 9),
             ).grid(row=2, column=0, sticky="w")

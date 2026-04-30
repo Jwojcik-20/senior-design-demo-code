@@ -18,16 +18,16 @@ except Exception:
 BASE_DIR = Path(__file__).resolve().parent
 SCRIPT_PATH = BASE_DIR / "test_go2_motion.py"
 
-BG = "#08111d"
-PANEL = "#0d1b2e"
-FIELD = "#0a1627"
-EDGE = "#214666"
-TEXT = "#e7f2ff"
-MUTED = "#8ea7c4"
-ACCENT = "#47d7ff"
-ACCENT_2 = "#7cffb2"
-WARN = "#ff7a90"
-LOG_BG = "#06101d"
+BG = "#ffffff"
+PANEL = "#f7f7f7"
+FIELD = "#ffffff"
+EDGE = "#d7d7d7"
+TEXT = "#111111"
+MUTED = "#4b4b4b"
+ACCENT = "#c1121f"
+ACCENT_2 = "#1f7a1f"
+WARN = "#b00020"
+LOG_BG = "#ffffff"
 
 MOTION_BUTTONS = [
     "Sit",
@@ -96,40 +96,40 @@ class MotionUI:
         style.configure("Panel.TFrame", background=PANEL)
         title_size = 18 if self.embedded else 22
         sub_size = 9 if self.embedded else 10
-        style.configure("Title.TLabel", background=BG, foreground=TEXT, font=("Segoe UI Semibold", title_size))
-        style.configure("Sub.TLabel", background=BG, foreground=MUTED, font=("Segoe UI", sub_size))
-        style.configure("Health.TLabel", background="#0b2238", foreground=ACCENT_2, font=("Segoe UI Semibold", 10), padding=(10, 6))
+        style.configure("Title.TLabel", background=BG, foreground=ACCENT, font=("Segoe UI Semibold", title_size))
+        style.configure("Sub.TLabel", background=BG, foreground=TEXT, font=("Segoe UI", sub_size))
+        style.configure("Health.TLabel", background="#f3f3f3", foreground=TEXT, font=("Segoe UI Semibold", 10), padding=(10, 6))
         style.configure("Field.TLabel", background=PANEL, foreground=TEXT, font=("Segoe UI", 10))
         style.configure("Info.TLabel", background=PANEL, foreground=MUTED, font=("Segoe UI", 10))
         style.configure("Section.TLabelframe", background=PANEL, foreground=ACCENT)
         style.configure("Section.TLabelframe.Label", background=PANEL, foreground=ACCENT, font=("Segoe UI Semibold", 11))
         style.configure(
             "Action.TButton",
-            background=PANEL,
+            background="#efefef",
             foreground=TEXT,
             borderwidth=0,
-            padding=(12, 10),
+            padding=(10, 8),
             font=("Segoe UI Semibold", 10),
         )
-        style.map("Action.TButton", background=[("active", "#183456"), ("pressed", "#0d2744")])
+        style.map("Action.TButton", background=[("active", "#e2e2e2"), ("pressed", "#d8d8d8")])
         style.configure(
             "Accent.TButton",
             background=ACCENT,
-            foreground="#04121d",
+            foreground="#ffffff",
             borderwidth=0,
-            padding=(12, 10),
+            padding=(10, 8),
             font=("Segoe UI Semibold", 10),
         )
-        style.map("Accent.TButton", background=[("active", "#77e5ff"), ("pressed", "#32c4f2")])
+        style.map("Accent.TButton", background=[("active", "#d11f2c"), ("pressed", "#a20f1a")])
         style.configure(
             "Warn.TButton",
-            background="#3a1622",
-            foreground="#ffd7de",
+            background="#ffe5e5",
+            foreground=WARN,
             borderwidth=0,
-            padding=(12, 10),
+            padding=(10, 8),
             font=("Segoe UI Semibold", 10),
         )
-        style.map("Warn.TButton", background=[("active", "#582130"), ("pressed", "#6a2839")])
+        style.map("Warn.TButton", background=[("active", "#ffd6d6"), ("pressed", "#ffcaca")])
         style.configure(
             "Input.TEntry",
             fieldbackground=FIELD,
@@ -171,9 +171,6 @@ class MotionUI:
         header.grid(row=0, column=0, sticky="ew")
         header.columnconfigure(0, weight=1)
         header.columnconfigure(1, weight=0)
-        header.columnconfigure(2, weight=0)
-        header.columnconfigure(3, weight=0)
-        header.columnconfigure(4, weight=0)
 
         ttk.Label(header, text="Go2 Motion Control", style="Title.TLabel").grid(row=0, column=0, sticky="w")
         ttk.Label(
@@ -183,29 +180,34 @@ class MotionUI:
         ).grid(row=1, column=0, sticky="w", pady=((4, 0) if self.embedded else (6, 0)))
         self.health_label = ttk.Label(header, textvariable=self.health_var, style="Health.TLabel")
         self.health_label.grid(row=0, column=1, rowspan=2, sticky="e", padx=(16, 10))
+        action_bar = ttk.Frame(header, style="App.TFrame")
+        action_bar.grid(row=2, column=0, columnspan=2, sticky="ew", pady=(10, 0))
+        action_bar.columnconfigure(0, weight=1)
+        action_bar.columnconfigure(1, weight=1)
+        action_bar.columnconfigure(2, weight=1)
         ttk.Button(
-            header,
+            action_bar,
             text="START ROBOT",
             style="Accent.TButton",
             command=lambda: self.run_motion("StandUp"),
-        ).grid(row=0, column=2, rowspan=2, sticky="e", padx=(0, 10))
+        ).grid(row=0, column=0, sticky="ew", padx=(0, 8))
         ttk.Button(
-            header,
+            action_bar,
             text="STOP ROBOT",
             style="Warn.TButton",
             command=lambda: self.run_motion("StopMove"),
-        ).grid(row=0, column=3, rowspan=2, sticky="e", padx=(0, 10))
+        ).grid(row=0, column=1, sticky="ew", padx=4)
         ttk.Button(
-            header,
+            action_bar,
             text="STOP PROCESS",
             style="Warn.TButton",
             command=self.stop_active_process,
-        ).grid(row=0, column=4, rowspan=2, sticky="e")
+        ).grid(row=0, column=2, sticky="ew", padx=(8, 0))
 
         body = ttk.Frame(self.root, style="App.TFrame", padding=body_pad)
         body.grid(row=1, column=0, sticky="nsew")
-        body.columnconfigure(0, weight=3)
-        body.columnconfigure(1, weight=2)
+        body.columnconfigure(0, weight=1)
+        body.columnconfigure(1, weight=1)
         body.rowconfigure(0, weight=1)
         body.rowconfigure(1, weight=1)
 
@@ -290,8 +292,8 @@ class MotionUI:
         status = tk.Label(
             connection,
             textvariable=self.status_var,
-            bg="#0b2238",
-            fg=ACCENT_2,
+            bg="#fff5f5",
+            fg=ACCENT,
             padx=12,
             pady=7,
             font=("Segoe UI Semibold", 10),
@@ -319,7 +321,7 @@ class MotionUI:
                         text=motion,
                         style=style,
                     )
-                    button.grid(row=r, column=c, sticky="ew", padx=6, pady=6, ipady=8)
+                    button.grid(row=r, column=c, sticky="ew", padx=6, pady=6, ipady=5)
                     button.bind("<ButtonPress-1>", lambda _event, name=motion: self.start_hold_motion(name))
                     button.bind("<ButtonRelease-1>", lambda _event: self.stop_hold_motion())
                     button.bind("<Leave>", lambda _event: self.stop_hold_motion())
@@ -329,7 +331,7 @@ class MotionUI:
                     text=motion,
                     style=style,
                     command=lambda name=motion: self.run_motion(name),
-                ).grid(row=r, column=c, sticky="ew", padx=6, pady=6, ipady=8)
+                ).grid(row=r, column=c, sticky="ew", padx=6, pady=6, ipady=5)
 
         quick = ttk.LabelFrame(body, text="Quick Motions", style="Section.TLabelframe", padding=16)
         quick.grid(row=1, column=1, sticky="nsew", pady=(16, 0))

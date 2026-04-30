@@ -21,16 +21,16 @@ from go2_navigation import (
 )
 
 
-BG = "#08111d"
-PANEL = "#0d1b2e"
-FIELD = "#0a1627"
-EDGE = "#214666"
-TEXT = "#e7f2ff"
-MUTED = "#8ea7c4"
-ACCENT = "#47d7ff"
-ACCENT_2 = "#7cffb2"
-WARN = "#ff7a90"
-GRID = "#16314d"
+BG = "#ffffff"
+PANEL = "#f7f7f7"
+FIELD = "#ffffff"
+EDGE = "#d7d7d7"
+TEXT = "#111111"
+MUTED = "#4b4b4b"
+ACCENT = "#c1121f"
+ACCENT_2 = "#1f7a1f"
+WARN = "#b00020"
+GRID = "#dddddd"
 ROBOT = "#7cffb2"
 WAYPOINT = "#47d7ff"
 TARGET = "#ffd166"
@@ -88,15 +88,15 @@ class LiveMapUI:
         style.configure("Panel.TFrame", background=PANEL)
         title_size = 18 if self.embedded else 22
         sub_size = 9 if self.embedded else 10
-        style.configure("Title.TLabel", background=BG, foreground=TEXT, font=("Segoe UI Semibold", title_size))
-        style.configure("Sub.TLabel", background=BG, foreground=MUTED, font=("Segoe UI", sub_size))
+        style.configure("Title.TLabel", background=BG, foreground=ACCENT, font=("Segoe UI Semibold", title_size))
+        style.configure("Sub.TLabel", background=BG, foreground=TEXT, font=("Segoe UI", sub_size))
         style.configure("Field.TLabel", background=PANEL, foreground=TEXT, font=("Segoe UI", 10))
         style.configure("Info.TLabel", background=PANEL, foreground=MUTED, font=("Segoe UI", 10))
         style.configure("Section.TLabelframe", background=PANEL, foreground=ACCENT)
         style.configure("Section.TLabelframe.Label", background=PANEL, foreground=ACCENT, font=("Segoe UI Semibold", 11))
-        style.configure("Action.TButton", background=PANEL, foreground=TEXT, borderwidth=0, padding=(12, 10), font=("Segoe UI Semibold", 10))
-        style.configure("Accent.TButton", background=ACCENT, foreground="#04121d", borderwidth=0, padding=(12, 10), font=("Segoe UI Semibold", 10))
-        style.configure("Warn.TButton", background="#3a1622", foreground="#ffd7de", borderwidth=0, padding=(12, 10), font=("Segoe UI Semibold", 10))
+        style.configure("Action.TButton", background="#efefef", foreground=TEXT, borderwidth=0, padding=(10, 8), font=("Segoe UI Semibold", 10))
+        style.configure("Accent.TButton", background=ACCENT, foreground="#ffffff", borderwidth=0, padding=(10, 8), font=("Segoe UI Semibold", 10))
+        style.configure("Warn.TButton", background="#ffe5e5", foreground=WARN, borderwidth=0, padding=(10, 8), font=("Segoe UI Semibold", 10))
 
     def _build(self):
         self.root.columnconfigure(0, weight=1)

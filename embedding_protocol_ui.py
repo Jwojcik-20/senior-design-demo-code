@@ -16,17 +16,17 @@ DISPLAY_SCRIPT_PATH = BASE_DIR / "display_video_channel_with_faces_login.py"
 DATASET_DIR = BASE_DIR / "dataset"
 VALID_ROLES = ("student", "staff", "guest")
 CONNECTION_MODES = ("hybrid", "auto", "localsta", "remote", "ssh")
-BG = "#07111f"
-PANEL = "#0d1b2e"
-PANEL_ALT = "#11243b"
-TEXT = "#e7f2ff"
-MUTED = "#8ea7c4"
-ACCENT = "#47d7ff"
-ACCENT_2 = "#7cffb2"
-WARN = "#ff7a90"
-FIELD = "#0a1627"
-FIELD_EDGE = "#214666"
-LOG_BG = "#06101d"
+BG = "#ffffff"
+PANEL = "#f7f7f7"
+PANEL_ALT = "#f2f2f2"
+TEXT = "#111111"
+MUTED = "#4b4b4b"
+ACCENT = "#c1121f"
+ACCENT_2 = "#1f7a1f"
+WARN = "#b00020"
+FIELD = "#ffffff"
+FIELD_EDGE = "#d7d7d7"
+LOG_BG = "#ffffff"
 
 
 class ProtocolUI:
@@ -74,8 +74,8 @@ class ProtocolUI:
         style.configure("PanelAlt.TFrame", background=PANEL_ALT)
         title_size = 18 if self.embedded else 22
         sub_size = 9 if self.embedded else 10
-        style.configure("Title.TLabel", background=BG, foreground=TEXT, font=("Segoe UI Semibold", title_size))
-        style.configure("Sub.TLabel", background=BG, foreground=MUTED, font=("Segoe UI", sub_size))
+        style.configure("Title.TLabel", background=BG, foreground=ACCENT, font=("Segoe UI Semibold", title_size))
+        style.configure("Sub.TLabel", background=BG, foreground=TEXT, font=("Segoe UI", sub_size))
         style.configure("Section.TLabelframe", background=PANEL, foreground=ACCENT)
         style.configure("Section.TLabelframe.Label", background=PANEL, foreground=ACCENT, font=("Segoe UI Semibold", 11))
         style.configure("Info.TLabel", background=PANEL, foreground=MUTED, font=("Segoe UI", 10))
@@ -86,30 +86,30 @@ class ProtocolUI:
             foreground=TEXT,
             borderwidth=0,
             focusthickness=0,
-            padding=(12, 10),
+            padding=(10, 8),
             font=("Segoe UI Semibold", 10),
         )
-        style.map("Action.TButton", background=[("active", "#183456"), ("pressed", "#0d2744")])
+        style.map("Action.TButton", background=[("active", "#e2e2e2"), ("pressed", "#d8d8d8")])
         style.configure(
             "Accent.TButton",
             background=ACCENT,
-            foreground="#04121d",
+            foreground="#ffffff",
             borderwidth=0,
             focusthickness=0,
-            padding=(12, 10),
+            padding=(10, 8),
             font=("Segoe UI Semibold", 10),
         )
-        style.map("Accent.TButton", background=[("active", "#77e5ff"), ("pressed", "#32c4f2")])
+        style.map("Accent.TButton", background=[("active", "#d11f2c"), ("pressed", "#a20f1a")])
         style.configure(
             "Warn.TButton",
-            background="#3a1622",
-            foreground="#ffd7de",
+            background="#ffe5e5",
+            foreground=WARN,
             borderwidth=0,
             focusthickness=0,
-            padding=(12, 10),
+            padding=(10, 8),
             font=("Segoe UI Semibold", 10),
         )
-        style.map("Warn.TButton", background=[("active", "#582130"), ("pressed", "#6a2839")])
+        style.map("Warn.TButton", background=[("active", "#ffd6d6"), ("pressed", "#ffcaca")])
         style.configure("TEntry", fieldbackground=FIELD, foreground=TEXT, insertcolor=ACCENT, bordercolor=FIELD_EDGE, lightcolor=FIELD_EDGE, darkcolor=FIELD_EDGE)
         style.configure("TCombobox", fieldbackground=FIELD, foreground=TEXT, arrowcolor=ACCENT, bordercolor=FIELD_EDGE, lightcolor=FIELD_EDGE, darkcolor=FIELD_EDGE)
         style.map(
@@ -144,8 +144,8 @@ class ProtocolUI:
         status_chip = tk.Label(
             header,
             textvariable=self.status_var,
-            bg="#0b2238",
-            fg=ACCENT_2,
+            bg="#fff5f5",
+            fg=ACCENT,
             padx=16,
             pady=7,
             font=("Segoe UI Semibold", 10),
@@ -155,9 +155,9 @@ class ProtocolUI:
 
         body = ttk.Frame(self.root, style="App.TFrame", padding=body_pad)
         body.grid(row=1, column=0, sticky="nsew")
-        body.columnconfigure(0, weight=0)
-        body.columnconfigure(1, weight=1)
-        body.columnconfigure(2, weight=0)
+        body.columnconfigure(0, weight=2)
+        body.columnconfigure(1, weight=3)
+        body.columnconfigure(2, weight=2)
         body.rowconfigure(0, weight=1)
 
         controls = ttk.LabelFrame(body, text="Guided Workflow", style="Section.TLabelframe", padding=18)
@@ -306,8 +306,8 @@ class ProtocolUI:
         self.workflow_hint = tk.Label(
             controls,
             textvariable=self.workflow_hint_var,
-            bg=PANEL,
-            fg=ACCENT_2,
+            bg="#fff5f5",
+            fg=ACCENT,
             anchor="w",
             justify="left",
             padx=12,
@@ -369,7 +369,7 @@ class ProtocolUI:
             roster,
             bg=LOG_BG,
             fg=TEXT,
-            selectbackground="#183456",
+            selectbackground="#ffe5e5",
             selectforeground=TEXT,
             highlightthickness=1,
             highlightbackground=FIELD_EDGE,
