@@ -72,6 +72,11 @@ class ProtocolUI:
         if hasattr(self, "scroll_canvas") and self.scroll_canvas.winfo_exists():
             self.scroll_canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
 
+    def _update_command_wrap(self, _event=None):
+        if hasattr(self, "command_label") and self.command_label.winfo_exists():
+            wrap = max(260, self.command_meta.winfo_width() - 140)
+            self.command_label.configure(wraplength=wrap)
+
     def _configure_style(self):
         style = ttk.Style()
         try:
@@ -198,13 +203,13 @@ class ProtocolUI:
 
         body = ttk.Frame(content, style="App.TFrame", padding=body_pad)
         body.grid(row=1, column=0, sticky="nsew")
-        body.columnconfigure(0, weight=2)
-        body.columnconfigure(1, weight=3)
-        body.columnconfigure(2, weight=2)
+        body.columnconfigure(0, weight=0, minsize=360)
+        body.columnconfigure(1, weight=1, minsize=760)
+        body.columnconfigure(2, weight=0, minsize=320)
         body.rowconfigure(0, weight=1)
 
         controls = ttk.LabelFrame(body, text="Guided Workflow", style="Section.TLabelframe", padding=18)
-        controls.grid(row=0, column=0, sticky="nsw", padx=(0, 12))
+        controls.grid(row=0, column=0, sticky="ns", padx=(0, 12))
         controls.configure(labelanchor="n")
         controls.columnconfigure(0, weight=1)
 
@@ -297,12 +302,19 @@ class ProtocolUI:
         output.columnconfigure(0, weight=1)
         output.rowconfigure(1, weight=1)
 
-        meta = ttk.Frame(output, style="Panel.TFrame")
-        meta.grid(row=0, column=0, sticky="ew")
-        meta.columnconfigure(1, weight=1)
+        self.command_meta = ttk.Frame(output, style="Panel.TFrame")
+        self.command_meta.grid(row=0, column=0, sticky="ew")
+        self.command_meta.columnconfigure(1, weight=1)
         self.command_var = tk.StringVar(value="No command started yet.")
-        ttk.Label(meta, text="Command", style="Info.TLabel").grid(row=0, column=0, sticky="w")
-        ttk.Label(meta, textvariable=self.command_var, style="Info.TLabel").grid(row=0, column=1, sticky="e")
+        ttk.Label(self.command_meta, text="Command", style="Info.TLabel").grid(row=0, column=0, sticky="nw")
+        self.command_label = ttk.Label(
+            self.command_meta,
+            textvariable=self.command_var,
+            style="Info.TLabel",
+            justify="left",
+        )
+        self.command_label.grid(row=0, column=1, sticky="ew", padx=(12, 0))
+        self.command_meta.bind("<Configure>", self._update_command_wrap)
 
         self.log_text = ScrolledText(
             output,
@@ -326,7 +338,7 @@ class ProtocolUI:
         ttk.Button(footer, text="Stop Active Command", style="Warn.TButton", command=self.stop_active_process).grid(row=0, column=1, sticky="e")
 
         roster = ttk.LabelFrame(body, text="System Roster", style="Section.TLabelframe", padding=14)
-        roster.grid(row=0, column=2, sticky="nsew")
+        roster.grid(row=0, column=2, sticky="ns")
         roster.columnconfigure(0, weight=1)
         roster.rowconfigure(1, weight=1)
 
